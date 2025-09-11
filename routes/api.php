@@ -106,8 +106,9 @@ Route::middleware(['auth:sanctum', 'customer'])->prefix('customer')->group(funct
     Route::post('/checkout/apply-coupon', [CheckoutController::class, 'applyCoupon']);
 
     //
-    Route::post('/product/index', [ProductController::class, 'index']);
 
     // Invoice for customer :
     Route::get('/invoices/{invoice}', [InvoiceController::class, 'show']);
 });
+
+Route::post('/product/index', [ProductController::class, 'index']);

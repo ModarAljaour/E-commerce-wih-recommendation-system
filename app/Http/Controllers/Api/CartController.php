@@ -6,18 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CartResource;
 use App\Models\Cart;
 use App\Repository\CartRepository;
+use App\Services\RecommendationService;
 use App\Traits\GeneralTrait;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
     use GeneralTrait;
-
     public $cart;
+    protected $recommendationService;
 
-    public function __construct(CartRepository $cart)
+    public function __construct(CartRepository $cart, RecommendationService $recommendationService)
     {
         $this->cart = $cart;
+        $this->recommendationService = $recommendationService;
     }
 
     public function index()
@@ -85,27 +87,23 @@ class CartController extends Controller
                 'error' => 'The product id field is required.'
             ], 400);
         }
-
         $request->validate([
             'product_id' => ['required', 'exists:products,id'],
         ]);
-
         $productId = $request->input('product_id');
-
         $cartItem = $cart->query()->where('product_id', $productId)->first();
         if (!$cartItem) {
             return $this->apiResponse(null, false, 'Product not found in your cart.', 404);
         }
         $cart->remove($productId);
-
         return $this->apiResponse(['message' => 'Product removed from cart.']);
     }
-
 
     public function clear(CartRepository $cart)
     {
         $cart->clear();
-
         return response()->json(['message' => 'Cart cleared.']);
     }
+
+    
 }
